@@ -26,11 +26,11 @@ uses json-c fork at http://github.com/jehiah/json-c
 #define JSON_FREE(json_obj) (json_object_put(json_obj))
 #define JSON_DEBUG 0
 
-#define BUFF_SIZE 10240
+#define BUFF_SIZE 20480
 
 int parse_fields(char *str, char **field_array);
 void parse_output_keys(char *str);
-int process_line(char *source, FILE *output);
+void process_line(char *source, FILE *output);
 void run(char *input_filename, char *output_filename);
 void usage();
 
@@ -66,7 +66,7 @@ int parse_json(char *json_str, struct json_object **json_obj)
     return SUCCESS;
 }
 
-int process_line(char *source, FILE *output)
+void process_line(char *source, FILE *output)
 {
     int i=0;
     struct json_object *json_obj;
