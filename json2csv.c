@@ -21,7 +21,7 @@ uses json-c fork at http://github.com/jehiah/json-c
 #define SUCCESS 0
 #define FAILURE 1
 
-#define JSON_GET_STR(json_obj, field) (json_object_get_string(json_object_object_get(json_obj, field)))
+#define JSON_GET_STR(json_obj, field) (json_object_to_json_string(json_object_object_get(json_obj, field)))
 #define JSON_GET_INT(json_obj, field) (json_object_get_int(json_object_object_get(json_obj, field)))
 #define JSON_FREE(json_obj) (json_object_put(json_obj))
 #define JSON_DEBUG 0
@@ -75,9 +75,9 @@ void process_line(char *source, FILE *output)
     }
     for (i=0; i < num_output_keys; i++) {
         if (i == 0) {
-            fprintf(output, "\"%s\"", JSON_GET_STR(json_obj, output_keys[i]));
+            fprintf(output, "%s", strcmp(JSON_GET_STR(json_obj, output_keys[i]), "null") == 0 ? "" : JSON_GET_STR(json_obj, output_keys[i]) );
         } else {
-            fprintf(output, ",\"%s\"", JSON_GET_STR(json_obj, output_keys[i]));
+            fprintf(output, ",%s", strcmp(JSON_GET_STR(json_obj, output_keys[i]), "null") == 0 ? "" : JSON_GET_STR(json_obj, output_keys[i]) );
         }
     }
     fprintf(output,"\n");

@@ -1,2 +1,4 @@
 {"a": 1, "b": "asdf\n"}
 {"a" : null}
+{"a": "\"quote test\""}
+{"a": "regular quote"}
