@@ -21,7 +21,7 @@ uses json-c fork at http://github.com/jehiah/json-c
 #define SUCCESS 0
 #define FAILURE 1
 
-#define JSON_GET_STR(json_obj, field) (json_object_get_string(json_object_object_get(json_obj, field)))
+#define JSON_GET_STR(json_obj, field) (json_object_to_json_string(json_object_object_get(json_obj, field)))
 #define JSON_GET_INT(json_obj, field) (json_object_get_int(json_object_object_get(json_obj, field)))
 #define JSON_FREE(json_obj) (json_object_put(json_obj))
 #define JSON_DEBUG 0
@@ -33,6 +33,8 @@ void parse_output_keys(char *str);
 void process_line(char *source, FILE *output);
 void run(char *input_filename, char *output_filename);
 void usage();
+
+char *json_string_to_csv_string(const char *json_string);
 
 int parse_json(char *json_str, struct json_object **json_obj); 
 
@@ -74,10 +76,14 @@ void process_line(char *source, FILE *output)
         return;
     }
     for (i=0; i < num_output_keys; i++) {
+        char *str = json_string_to_csv_string(JSON_GET_STR(json_obj, output_keys[i]));
         if (i == 0) {
-            fprintf(output, "\"%s\"", JSON_GET_STR(json_obj, output_keys[i]));
+            fprintf(output, "%s", strcmp(str, "null") == 0 ? "" : str);
         } else {
-            fprintf(output, ",\"%s\"", JSON_GET_STR(json_obj, output_keys[i]));
+            fprintf(output, ",%s", strcmp(str, "null") == 0 ? "" : str);
+        }
+        if (str) {
+            free(str);
         }
     }
     fprintf(output,"\n");
@@ -125,7 +131,11 @@ void run(char *input_filename, char *output_filename) {
     fclose(in_file);
     fclose(out_file);
     JSON_FREE(data);
-    
+
+    int i;
+    for (i = 0; i < num_output_keys; i++) {
+        free(output_keys[i]);
+    }
 }
 
 
@@ -165,7 +175,27 @@ int parse_fields(char *str, char **field_array)
         tok = strtok_r(NULL, delim, &save_ptr);
         i++;
     }
+    if (str_ptr) {
+        free(str_ptr);
+    }
     return i;
+}
+
+
+/*
+ * Transforms the JSON escape sequence \" into the CSV escape sequence "".
+ */
+char *json_string_to_csv_string(const char *json_string)
+{
+    char *str = strdup(json_string);
+    char *head = str;
+    while (*str) {
+        if (*str == '\\' && *(str+1) == '\"') {
+            *str = '\"';
+        }
+        ++str;
+    }
+    return head;
 }
 
 void usage(){
