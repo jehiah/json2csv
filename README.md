@@ -1,6 +1,8 @@
 json2csv
 ========
 
+[![Build Status](https://travis-ci.org/jehiah/json2csv.png?branch=master)](https://travis-ci.org/jehiah/json2csv)
+
 Converts a stream of newline separated json data to csv format
 
     usage: json2csv
@@ -8,6 +10,7 @@ Converts a stream of newline separated json data to csv format
         -i /path/to/input.json (optional; default is stdin)
         -o /path/to/output.csv (optional; default is stdout)
         -v verbose output (to stderr)
+        --version
         -h this help
 
 To convert:

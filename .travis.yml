@@ -1,0 +1,6 @@
+language: go
+install:
+  - go get github.com/bmizerany/assert
+notifications:
+  email: false
+
