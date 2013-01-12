@@ -31,18 +31,10 @@ or
 Installation
 ============
 
-json-c dependancy
+If you have a working golang install, you can use `go get`.
 
-    $ git clone git://github.com/jehiah/json-c.git
-    $ cd json-c
-    $ sh autogen.sh
-    $ ./configure
-    $ make
-    $ make install
+```bash
+go install github.com/jehiah/json2csv
+```
 
-json2csv
 
-    $ git clone git://github.com/jehiah/json2csv.git
-    $ cd json2csv
-    $ make
-    $ make install
