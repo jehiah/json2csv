@@ -37,7 +37,7 @@ func main() {
 
 	var reader *bufio.Reader
 	var writer *csv.Writer
-	if *inputFile == "" {
+	if *inputFile != "" {
 		file, err := os.OpenFile(*inputFile, os.O_RDONLY, 0600)
 		if err != nil {
 			log.Printf("Error %s opening %v", err, *inputFile)
@@ -51,7 +51,7 @@ func main() {
 	if *outputFile != "" {
 		file, err := os.OpenFile(*outputFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 		if err != nil {
-			log.Printf("Error %s opening %v", err, *outputFile)
+			log.Printf("Error %s opening outputFile %v", err, *outputFile)
 		}
 		writer = csv.NewWriter(file)
 	} else {
@@ -68,6 +68,8 @@ func json2csv(r LineReader, w *csv.Writer, keys []string) {
 			if err != io.EOF {
 				log.Printf("Input ERROR: %s", err)
 				break
+			} else {
+				return
 			}
 		}
 
