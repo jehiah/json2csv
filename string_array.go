@@ -2,12 +2,15 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 type StringArray []string
 
 func (a *StringArray) Set(s string) error {
-	*a = append(*a, s)
+	for _, ss := range strings.Split(s, ",") {
+		*a = append(*a, ss)
+	}
 	return nil
 }
 
