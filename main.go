@@ -16,11 +16,11 @@ type LineReader interface {
 }
 
 var (
-	inputFilename  = flag.String("i", "", "/path/to/input.json (optional; default is stdin)")
-	outputFilename = flag.String("o", "", "/path/to/output.json (optional; default is stdin)")
-	verbose        = flag.Bool("v", false, "verbose output (to stderr)")
-	showVersion    = flag.Bool("version", false, "print version string")
-	keys           = StringArray{}
+	inputFile   = flag.String("i", "", "/path/to/input.json (optional; default is stdin)")
+	outputFile  = flag.String("o", "", "/path/to/output.json (optional; default is stdin)")
+	verbose     = flag.Bool("v", false, "verbose output (to stderr)")
+	showVersion = flag.Bool("version", false, "print version string")
+	keys        = StringArray{}
 )
 
 func init() {
@@ -35,8 +35,29 @@ func main() {
 		return
 	}
 
-	reader := bufio.NewReader(os.Stdin)
-	writer := csv.NewWriter(os.Stdout)
+	var reader *bufio.Reader
+	var writer *csv.Writer
+	if *inputFile == "" {
+		file, err := os.OpenFile(*inputFile, os.O_RDONLY, 0600)
+		if err != nil {
+			log.Printf("Error %s opening %v", err, *inputFile)
+			return
+		}
+		reader = bufio.NewReader(file)
+	} else {
+		reader = bufio.NewReader(os.Stdin)
+	}
+
+	if *outputFile != "" {
+		file, err := os.OpenFile(*outputFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+		if err != nil {
+			log.Printf("Error %s opening %v", err, *outputFile)
+		}
+		writer = csv.NewWriter(file)
+	} else {
+		writer = csv.NewWriter(os.Stdout)
+	}
+
 	json2csv(reader, writer, keys)
 }
 
