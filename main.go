@@ -62,15 +62,21 @@ func main() {
 }
 
 func json2csv(r LineReader, w *csv.Writer, keys []string) {
-	line, err := r.ReadBytes('\n')
+	var line []byte
+	var err error
 	for {
+		if err == io.EOF {
+			return
+		}
+		line, err = r.ReadBytes('\n')
 		if err != nil {
 			if err != io.EOF {
 				log.Printf("Input ERROR: %s", err)
 				break
-			} else {
-				return
 			}
+		}
+		if len(line) == 0 {
+			continue
 		}
 
 		var data map[string]interface{}
@@ -94,6 +100,5 @@ func json2csv(r LineReader, w *csv.Writer, keys []string) {
 		}
 		w.Write(record)
 		w.Flush()
-		line, err = r.ReadBytes('\n')
 	}
 }
