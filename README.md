@@ -12,7 +12,7 @@ Installation
 If you have a working golang install, you can use `go get`.
 
 ```bash
-go install github.com/jehiah/json2csv
+go get github.com/jehiah/json2csv
 ```
 
 Usage
