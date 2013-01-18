@@ -24,3 +24,31 @@ func TestGetTopic(t *testing.T) {
 	output := buf.String()
 	assert.Equal(t, output, "1,\"\"\n\"\",\"\"\n")
 }
+
+func TestGetLargeInt(t *testing.T) {
+	log.SetOutput(ioutil.Discard)
+	defer log.SetOutput(os.Stdout)
+
+	reader := bytes.NewBufferString(`{"a": 1356998399}`)
+	buf := bytes.NewBuffer([]byte{})
+	writer := csv.NewWriter(buf)
+
+	json2csv(reader, writer, []string{"a"})
+
+	output := buf.String()
+	assert.Equal(t, output, "1356998399\n")
+}
+
+func TestGetFloat(t *testing.T) {
+	log.SetOutput(ioutil.Discard)
+	defer log.SetOutput(os.Stdout)
+
+	reader := bytes.NewBufferString(`{"a": 1356998399.32}`)
+	buf := bytes.NewBuffer([]byte{})
+	writer := csv.NewWriter(buf)
+
+	json2csv(reader, writer, []string{"a"})
+
+	output := buf.String()
+	assert.Equal(t, output, "1356998399.320000\n")
+}

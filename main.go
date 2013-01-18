@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math"
 	"os"
 )
 
@@ -91,6 +92,13 @@ func json2csv(r LineReader, w *csv.Writer, keys []string) {
 				switch v.(type) {
 				case nil:
 					record = append(record, "")
+				case float64:
+					f, _ := v.(float64)
+					if math.Mod(f, 1.0) == 0.0 {
+						record = append(record, fmt.Sprintf("%d", int(f)))
+					} else {
+						record = append(record, fmt.Sprintf("%f", f))
+					}
 				default:
 					record = append(record, fmt.Sprintf("%+v", v))
 				}
