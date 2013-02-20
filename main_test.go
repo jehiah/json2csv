@@ -52,3 +52,17 @@ func TestGetFloat(t *testing.T) {
 	output := buf.String()
 	assert.Equal(t, output, "1356998399.320000\n")
 }
+
+func TestGetNested(t *testing.T) {
+	log.SetOutput(ioutil.Discard)
+	defer log.SetOutput(os.Stdout)
+
+	reader := bytes.NewBufferString(`{"a": {"b": "asdf"}}`)
+	buf := bytes.NewBuffer([]byte{})
+	writer := csv.NewWriter(buf)
+
+	json2csv(reader, writer, []string{"a.b"})
+
+	output := buf.String()
+	assert.Equal(t, output, "asdf\n")
+}
