@@ -1,7 +1,10 @@
 json2csv
 ========
 
-Converts a stream of newline separated json data to csv format. This version of json2csv supports nested fields.
+Converts a stream of newline separated json data to csv format.
+
+[![Build Status](https://travis-ci.org/jehiah/json2csv.png?branch=master)](https://travis-ci.org/jehiah/json2csv)
+
 
 Installation
 ============
@@ -9,7 +12,7 @@ Installation
 If you have a working golang install, you can use `go get`.
 
 ```bash
-go get github.com/jeroenjanssens/json2csv
+go get github.com/jehiah/json2csv
 ```
 
 Usage
@@ -52,4 +55,3 @@ or
 ```bash
 cat input.json | json2csv -k user.name,remote_ip > output.csv
 ```
-
