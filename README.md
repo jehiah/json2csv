@@ -25,7 +25,8 @@ usage: json2csv
     -o /path/to/output.csv (optional; default is stdout)
     -v verbose output (to stderr)
     --version
-    -h this help
+    -p print csv header row
+    -h This help
 ```
 
 To convert:
