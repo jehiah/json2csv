@@ -22,7 +22,8 @@ var (
 	outputFile  = flag.String("o", "", "/path/to/output.json (optional; default is stdout)")
 	verbose     = flag.Bool("v", false, "verbose output (to stderr)")
 	showVersion = flag.Bool("version", false, "print version string")
-    printHeader = flag.Bool("h", false, "Prints header to output")
+    printHeader = flag.Bool("p", false, "Prints header to output")
+    showHelp = flag.Bool("h", false, "Prints help")
 	keys        = StringArray{}
 )
 
