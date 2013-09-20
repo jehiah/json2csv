@@ -23,7 +23,6 @@ var (
 	verbose     = flag.Bool("v", false, "verbose output (to stderr)")
 	showVersion = flag.Bool("version", false, "print version string")
     printHeader = flag.Bool("p", false, "Prints header to output")
-    showHelp = flag.Bool("h", false, "Prints help")
 	keys        = StringArray{}
 )
 
