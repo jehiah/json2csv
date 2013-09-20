@@ -22,6 +22,7 @@ var (
 	outputFile  = flag.String("o", "", "/path/to/output.json (optional; default is stdout)")
 	verbose     = flag.Bool("v", false, "verbose output (to stderr)")
 	showVersion = flag.Bool("version", false, "print version string")
+    printHeader = flag.Bool("p", false, "Prints header to output")
 	keys        = StringArray{}
 )
 
@@ -61,7 +62,7 @@ func main() {
 	}
 
 
-	json2csv(reader, writer, keys)
+	json2csv(reader, writer, keys, *printHeader)
 }
 
 func get_value(data map[string]interface{}, keyparts []string) string {
@@ -87,7 +88,7 @@ func get_value(data map[string]interface{}, keyparts []string) string {
 	return ""
 }
 
-func json2csv(r LineReader, w *csv.Writer, keys []string) {
+func json2csv(r LineReader, w *csv.Writer, keys []string, print_header bool) {
 	var line []byte
 	var err error
 
@@ -123,6 +124,9 @@ func json2csv(r LineReader, w *csv.Writer, keys []string) {
 			record = append(record, get_value(data, expanded_key))
 		}
 
+        if print_header {
+            w.Write(keys)
+        }
 		w.Write(record)
 		w.Flush()
 	}
