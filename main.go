@@ -43,8 +43,8 @@ func main() {
 	if *inputFile != "" {
 		file, err := os.OpenFile(*inputFile, os.O_RDONLY, 0600)
 		if err != nil {
-			log.Printf("Error %s opening %v", err, *inputFile)
-			return
+			log.Printf("Error %s opening input file %v", err, *inputFile)
+			os.Exit(1)
 		}
 		reader = bufio.NewReader(file)
 	} else {
@@ -54,7 +54,8 @@ func main() {
 	if *outputFile != "" {
 		file, err := os.OpenFile(*outputFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 		if err != nil {
-			log.Printf("Error %s opening outputFile %v", err, *outputFile)
+			log.Printf("Error %s opening output file %v", err, *outputFile)
+			os.Exit(1)
 		}
 		writer = csv.NewWriter(file)
 	} else {
