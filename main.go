@@ -11,6 +11,7 @@ import (
 	"math"
 	"os"
 	"strings"
+	"unicode/utf8"
 )
 
 type LineReader interface {
@@ -20,9 +21,10 @@ type LineReader interface {
 var (
 	inputFile   = flag.String("i", "", "/path/to/input.json (optional; default is stdin)")
 	outputFile  = flag.String("o", "", "/path/to/output.json (optional; default is stdout)")
+	outputDelim = flag.String("d", ",", "delimiter used for output values")
 	verbose     = flag.Bool("v", false, "verbose output (to stderr)")
 	showVersion = flag.Bool("version", false, "print version string")
-	printHeader = flag.Bool("p", false, "Prints header to output")
+	printHeader = flag.Bool("p", false, "prints header to output")
 	keys        = StringArray{}
 )
 
@@ -61,6 +63,9 @@ func main() {
 	} else {
 		writer = csv.NewWriter(os.Stdout)
 	}
+
+	delim, _ := utf8.DecodeRuneInString(*outputDelim)
+	writer.Comma = delim
 
 	json2csv(reader, writer, keys, *printHeader)
 }
