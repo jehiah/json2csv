@@ -96,6 +96,7 @@ func get_value(data map[string]interface{}, keyparts []string) string {
 func json2csv(r LineReader, w *csv.Writer, keys []string, printHeader bool) {
 	var line []byte
 	var err error
+	line_count := 0
 
 	var expanded_keys [][]string
 	for _, key := range keys {
@@ -113,6 +114,7 @@ func json2csv(r LineReader, w *csv.Writer, keys []string, printHeader bool) {
 				break
 			}
 		}
+		line_count++
 		if len(line) == 0 {
 			continue
 		}
@@ -126,7 +128,7 @@ func json2csv(r LineReader, w *csv.Writer, keys []string, printHeader bool) {
 		var data map[string]interface{}
 		err = json.Unmarshal(line, &data)
 		if err != nil {
-			log.Printf("ERROR Json Decoding: %s - %v", err, line)
+			log.Printf("ERROR Decoding JSON at line %d: %s\n%s", line_count, err, line)
 			continue
 		}
 
