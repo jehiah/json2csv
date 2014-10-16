@@ -22,6 +22,7 @@ var (
 	inputFile   = flag.String("i", "", "/path/to/input.json (optional; default is stdin)")
 	outputFile  = flag.String("o", "", "/path/to/output.csv (optional; default is stdout)")
 	outputDelim = flag.String("d", ",", "delimiter used for output values")
+	outputTab   = flag.Bool("t", false, "tab delimited output (overrides -d)")
 	verbose     = flag.Bool("v", false, "verbose output (to stderr)")
 	showVersion = flag.Bool("version", false, "print version string")
 	printHeader = flag.Bool("p", false, "prints header to output")
@@ -65,6 +66,9 @@ func main() {
 	}
 
 	delim, _ := utf8.DecodeRuneInString(*outputDelim)
+	if *outputTab {
+		delim = '\t'
+	}
 	writer.Comma = delim
 
 	json2csv(reader, writer, keys, *printHeader)
