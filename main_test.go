@@ -22,7 +22,7 @@ func TestGetTopic(t *testing.T) {
 	json2csv(reader, writer, []string{"a", "c"}, false)
 
 	output := buf.String()
-	assert.Equal(t, output, "1,\"\"\n\"\",\"\"\n")
+	assert.Equal(t, output, "1,\n,\n")
 }
 
 func TestGetLargeInt(t *testing.T) {
