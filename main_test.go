@@ -3,11 +3,12 @@ package main
 import (
 	"bytes"
 	"encoding/csv"
-	"github.com/bmizerany/assert"
 	"io/ioutil"
 	"log"
 	"os"
 	"testing"
+
+	"github.com/bmizerany/assert"
 )
 
 func TestGetTopic(t *testing.T) {

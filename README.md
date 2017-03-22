@@ -9,6 +9,8 @@ Converts a stream of newline separated json data to csv format.
 Installation
 ============
 
+pre-built binaries are available under [releases](https://github.com/jehiah/json2csv/releases).
+
 If you have a working golang install, you can use `go get`.
 
 ```bash
@@ -23,7 +25,6 @@ usage: json2csv
     -k fields,and,nested.fields,to,output
     -i /path/to/input.json (optional; default is stdin)
     -o /path/to/output.csv (optional; default is stdout)
-    -v verbose output (to stderr)
     --version
     -p print csv header row
     -h This help

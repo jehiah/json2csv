@@ -18,25 +18,18 @@ type LineReader interface {
 	ReadBytes(delim byte) (line []byte, err error)
 }
 
-var (
-	inputFile   = flag.String("i", "", "/path/to/input.json (optional; default is stdin)")
-	outputFile  = flag.String("o", "", "/path/to/output.csv (optional; default is stdout)")
-	outputDelim = flag.String("d", ",", "delimiter used for output values")
-	verbose     = flag.Bool("v", false, "verbose output (to stderr)")
-	showVersion = flag.Bool("version", false, "print version string")
-	printHeader = flag.Bool("p", false, "prints header to output")
-	keys        = StringArray{}
-)
-
-func init() {
-	flag.Var(&keys, "k", "fields to output")
-}
-
 func main() {
+	inputFile := flag.String("i", "", "/path/to/input.json (optional; default is stdin)")
+	outputFile := flag.String("o", "", "/path/to/output.csv (optional; default is stdout)")
+	outputDelim := flag.String("d", ",", "delimiter used for output values")
+	showVersion := flag.Bool("version", false, "print version string")
+	printHeader := flag.Bool("p", false, "prints header to output")
+	keys := StringArray{}
+	flag.Var(&keys, "k", "fields to output")
 	flag.Parse()
 
 	if *showVersion {
-		fmt.Printf("json2csv v1.1\n")
+		fmt.Printf("json2csv %s\n", VERSION)
 		return
 	}
 
