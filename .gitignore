@@ -1,4 +1,6 @@
 json2csv
+dist
+build
 
 # from https://github.com/github/gitignore/blob/master/Go.gitignore
 
