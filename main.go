@@ -10,6 +10,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"runtime"
 	"strings"
 	"unicode/utf8"
 )
@@ -29,7 +30,7 @@ func main() {
 	flag.Parse()
 
 	if *showVersion {
-		fmt.Printf("json2csv %s\n", VERSION)
+		fmt.Printf("json2csv v%s (built w/%s)\n", VERSION, runtime.Version())
 		return
 	}
 
