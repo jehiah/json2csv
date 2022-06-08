@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -104,10 +105,15 @@ func json2csv(r LineReader, w *csv.Writer, keys []string, printHeader bool) {
 			val, vt, _, err := jsonparser.Get(line, expanded_key...)
 
 			if err != nil {
-				log.Printf("ERROR Retrieving JSON key %s at line %d: %s\n%s",
-					strings.Join(expanded_key[:], "."), line_count, err, line)
-				record = append(record, "")
-				continue
+				if errors.Is(err, jsonparser.KeyPathNotFoundError) {
+					record = append(record, "")
+					continue
+				} else {
+					log.Printf("ERROR Retrieving JSON key %s at line %d: %s\n%s",
+						strings.Join(expanded_key[:], "."), line_count, err, line)
+					record = append(record, "")
+					continue
+				}
 			}
 
 			value, err := convertJsonValue(val, vt)
