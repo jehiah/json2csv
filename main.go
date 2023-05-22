@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
-	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -11,8 +11,11 @@ import (
 	"math"
 	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	"github.com/buger/jsonparser"
 )
 
 type LineReader interface {
@@ -64,29 +67,6 @@ func main() {
 	json2csv(reader, writer, keys, *printHeader)
 }
 
-func get_value(data map[string]interface{}, keyparts []string) string {
-	if len(keyparts) > 1 {
-		subdata, _ := data[keyparts[0]].(map[string]interface{})
-		return get_value(subdata, keyparts[1:])
-	} else if v, ok := data[keyparts[0]]; ok {
-		switch v.(type) {
-		case nil:
-			return ""
-		case float64:
-			f, _ := v.(float64)
-			if math.Mod(f, 1.0) == 0.0 {
-				return fmt.Sprintf("%d", int(f))
-			} else {
-				return fmt.Sprintf("%f", f)
-			}
-		default:
-			return fmt.Sprintf("%+v", v)
-		}
-	}
-
-	return ""
-}
-
 func json2csv(r LineReader, w *csv.Writer, keys []string, printHeader bool) {
 	var line []byte
 	var err error
@@ -119,19 +99,59 @@ func json2csv(r LineReader, w *csv.Writer, keys []string, printHeader bool) {
 			printHeader = false
 		}
 
-		var data map[string]interface{}
-		err = json.Unmarshal(line, &data)
-		if err != nil {
-			log.Printf("ERROR Decoding JSON at line %d: %s\n%s", line_count, err, line)
-			continue
-		}
-
 		var record []string
 		for _, expanded_key := range expanded_keys {
-			record = append(record, get_value(data, expanded_key))
+			//val, valuetype, offset, err
+			val, vt, _, err := jsonparser.Get(line, expanded_key...)
+
+			if err != nil {
+				if errors.Is(err, jsonparser.KeyPathNotFoundError) {
+					record = append(record, "")
+					continue
+				} else {
+					log.Printf("ERROR Retrieving JSON key %s at line %d: %s\n%s",
+						strings.Join(expanded_key[:], "."), line_count, err, line)
+					record = append(record, "")
+					continue
+				}
+			}
+
+			value, err := convertJsonValue(val, vt)
+
+			if err != nil {
+				log.Printf("ERROR Decoding JSON at line %d: %s\n%s", line_count, err, line)
+				continue
+			}
+
+			record = append(record, value)
 		}
 
 		w.Write(record)
 		w.Flush()
 	}
+}
+
+func convertJsonValue(v []byte, vt jsonparser.ValueType) (string, error) {
+	switch vt {
+	case jsonparser.String:
+		return string(v[:]), nil
+	case jsonparser.Boolean:
+		return fmt.Sprintf("+%v", string(v[:])), nil
+	case jsonparser.Number:
+		f, _ := strconv.ParseFloat(string(v[:]), 64)
+		if math.Mod(f, 1.0) == 0.0 {
+			return fmt.Sprintf("%d", int(f)), nil
+		} else {
+			return fmt.Sprintf("%f", f), nil
+		}
+	case jsonparser.NotExist:
+	case jsonparser.Null:
+		return "", nil
+	case jsonparser.Object:
+		return "", fmt.Errorf("JSON value is an object: %s", v)
+	case jsonparser.Array:
+		return "", fmt.Errorf("JSON value is an array: %s", v)
+	}
+
+	return "", fmt.Errorf("JSON value is an unknown type: %s", v)
 }
