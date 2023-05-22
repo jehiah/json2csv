@@ -11,10 +11,10 @@ Installation
 
 pre-built binaries are available under [releases](https://github.com/jehiah/json2csv/releases).
 
-If you have a working golang install, you can use `go get`.
+If you have a working golang install, you can use `go install`.
 
 ```bash
-go get github.com/jehiah/json2csv
+go install github.com/jehiah/json2csv@latest
 ```
 
 Usage
