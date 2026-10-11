@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/csv"
 	"encoding/json"
 	"flag"
@@ -72,11 +73,24 @@ func get_value(data map[string]interface{}, keyparts []string) string {
 		switch v := v.(type) {
 		case nil:
 			return ""
-		case float64:
-			if math.Mod(v, 1.0) == 0.0 {
-				return fmt.Sprintf("%d", int(v))
+		case json.Number:
+			if v == "-0" {
+				return "0"
+			}
+			if !strings.ContainsAny(v.String(), ".eE") {
+				return v.String()
+			}
+			f, err := v.Float64()
+			if err != nil {
+				return v.String()
+			}
+			if f == 0 {
+				return "0"
+			}
+			if math.Mod(f, 1.0) == 0.0 {
+				return fmt.Sprintf("%.0f", f)
 			} else {
-				return fmt.Sprintf("%f", v)
+				return fmt.Sprintf("%f", f)
 			}
 		default:
 			return fmt.Sprintf("%+v", v)
@@ -123,9 +137,14 @@ func json2csv(r LineReader, w *csv.Writer, keys []string, printHeader bool) {
 		}
 
 		var data map[string]interface{}
-		err = json.Unmarshal(line, &data)
-		if err != nil {
-			log.Printf("ERROR Decoding JSON at line %d: %s\n%s", line_count, err, line)
+		decoder := json.NewDecoder(bytes.NewReader(line))
+		decoder.UseNumber()
+		decodeErr := decoder.Decode(&data)
+		if decodeErr == nil && decoder.Decode(new(interface{})) != io.EOF {
+			decodeErr = fmt.Errorf("unexpected data after JSON object")
+		}
+		if decodeErr != nil {
+			log.Printf("ERROR Decoding JSON at line %d: %s\n%s", line_count, decodeErr, line)
 			continue
 		}
 
